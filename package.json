@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/acdmft/backend/issues"
   },
-  "homepage": "https://github.com/acdmft/backend#readme"
+  "homepage": "https://github.com/acdmft/backend#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }

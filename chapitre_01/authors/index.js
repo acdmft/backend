@@ -33,7 +33,8 @@ app.get("/authors/:authorId", (req, res) => {
   if (!author) {
     return res.json( "Author not found!");
   }
-  res.json(`${author.name}, ${author.nationality}`);
+  // res.json(`${author.name}, ${author.nationality}`);
+  res.json({name: author.name, nationality: author.nationality});s
 });
 // exercise 03
 app.get("/authors/:authorId/books", (req,res) => {
@@ -42,7 +43,8 @@ app.get("/authors/:authorId/books", (req,res) => {
   if (!author) {
     return res.json("Author not found!");
   } 
-  res.json(author.books.join(", "));
+  // res.json(author.books.join(", "));
+  res.json({books: author.books});
 });
 app.listen(8080, () => {
   console.log("Listen on port 8080");
