@@ -26,18 +26,24 @@ const authors = [
 // exercise 01
 app.get("/", (req, res) => {
   res.send("Authors API");
-})
+});
 // exercise 02 
 app.get("/authors/:authorId", (req, res) => {
-  const author = authors.find((author, index) => {
-    return index.toString() === req.params.authorId; 
-  });
+  const author = authors[parseInt(req.params.authorId) -1];
   if (!author) {
-    return res.json( "Author not found!")
+    return res.json( "Author not found!");
   }
   res.json(`${author.name}, ${author.nationality}`);
 });
+// exercise 03
+app.get("/authors/:authorId/books", (req,res) => {
+  const author = authors[parseInt(req.params.authorId) - 1];
 
+  if (!author) {
+    return res.json("Author not found!");
+  } 
+  res.json(author.books.join(", "));
+});
 app.listen(8080, () => {
   console.log("Listen on port 8080");
 })
