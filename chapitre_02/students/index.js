@@ -28,10 +28,13 @@ app.get("/students", (req, res) => {
   res.json(students);
 });
 app.post("/students", (req, res) => {
-  // students.push({
-  //   id: students()
-  // })
-  console.log(req.body.name);
+  students.push({
+    id: students.length + 1,
+    name: req.body.name,
+    age: req.body.age,
+    gender: req.body.gender,
+  })
+  res.send(students);
 });
 
 
