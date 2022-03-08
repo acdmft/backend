@@ -51,7 +51,8 @@ app.get("/json/authors/:authorId", (req, res) => {
   if (!author) {
     return res.json( "Author not found!");
   }
-  res.json({name: author.name, nationality: author.nationality});s
+  delete()
+  // res.json({name: author.name, nationality: author.nationality});
 });
 
 app.get("/json/authors/:authorId/books", (req,res) => {
