@@ -1,8 +1,15 @@
 const express = require("express");
 const app = express();
-// Debug middleware
+// DEBUG MIDDLEWARE
 const debug = (req, res, next) => {
   console.log("Call from debug middleware");
+  next();
+}
+// transformName MIDDLEWARE
+const transformName = (req, res, next) => {
+  if (req.body.name) {
+    req.body.name = req.body.name.toLowerCase();
+  }
   next();
 }
 
@@ -36,11 +43,40 @@ const superHeros =
       image: "https://aws.vdkimg.com/film/2/5/1/1/251170_backdrop_scale_1280xauto.jpg"
   }
 ]
-app.get("/heros", (req, res) => {
+// GET all heroes
+app.get("/heroes", (req, res) => {
   res.json(superHeros);
+});
+// GET hero by his name 
+app.get("/heroes/:name", (req, res) => {
+  const hero = superHeros.find((hero) => { 
+    return hero.name === req.params.name;
+  });
+  res.json(hero);
+});
+// GET the powers of hero 
+app.get("/heroes/:name/powers", (req, res) => {
+  const hero = superHeros.find((hero) => {
+    return hero.name === req.params.name;
+  });
+  res.json(hero.power)
 })
-
+// POST A HERO
+app.post("/heroes", transformName, (req, res) => {
+  superHeros.push(req.body);
+  res.json(superHeros[superHeros.length-1]);
+})
+// PATCH A HERO'S POWERS
+app.patch("/heroes/:name/powers", (req, res) => {
+  const hero = superHeros.find((hero)=> {
+    return hero.name === req.params.name;
+  });
+  hero.power.push(req.body.power);
+  res.json(hero);
+})
+// 404 PAGE
 app.get("*", (_,res)=>{
   res.status(404).send("Page not found")
-})
+});
+
 app.listen(8080, () => console.log("Server started"));
