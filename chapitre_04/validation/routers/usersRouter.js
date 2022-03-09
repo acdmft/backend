@@ -73,5 +73,15 @@ router.get("/user/id/:id", (req, res) => {
   }
   res.json(user);
 });
+// GET USER BY EMAIL
+router.get("/user/email/:email", (req, res) => {
+  const user = users.find((user)=> {
+    return user.email === req.params.email;
+  });
+  if (!user) {
+    return res.send("User not found");
+  }
+  res.json(user);
+});
 
 module.exports = router;
