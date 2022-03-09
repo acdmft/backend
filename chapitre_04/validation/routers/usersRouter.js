@@ -44,8 +44,34 @@ router.post("/", (req, res) => {
       message: validationResult.error,
     });
   }
+  // create id for new user 
+  const id = users[users.length - 1].id + 1;
+  user.id = id;
   users.push(user);
   res.json({ message: "User has been added", users });
+});
+// GET USER BY NAME
+router.get("/users/:name", (req, res) => {
+  const user = users.find((user) => {
+    return (
+      user.name.replace(" ", "-").toLowerCase() ===
+      req.params.name.replace(" ", "-").toLowerCase()
+    );
+  });
+  if (!user) {
+    return res.send("User not found");
+  }
+  res.json(user);
+});
+// GET USER BY ID
+router.get("/user/id/:id", (req, res) => {
+  const user = users.find((user)=> {
+    return user.id.toString() === req.params.id;
+  })
+  if (!user) {
+    return res.send("User not found");
+  }
+  res.json(user);
 });
 
 module.exports = router;
