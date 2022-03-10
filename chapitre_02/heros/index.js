@@ -13,7 +13,7 @@ const transformName = (req, res, next) => {
   next();
 };
 // findHero MIDDLEWARE
-const findHero = (req, _res, next) => {
+function findHero(req, _res, next) {
   const hero = superHeros.find((hero) => {
     return (
       hero.name.toLowerCase().replace(" ", "-") ===
@@ -27,6 +27,7 @@ const findHero = (req, _res, next) => {
 app.use(debug);
 app.use(express.json());
 
+// SUPERHEROS
 const superHeros = [
   {
     name: "Iron Man",
@@ -70,11 +71,21 @@ app.get("/heroes/:name/powers", findHero, (req, res) => {
 });
 // POST A HERO
 app.post("/heroes", transformName, (req, res) => {
-  superHeros.push(req.body);
-  res.json({
-    message: "Ok, hero is added",
-    hero: superHeros[superHeros.length - 1],
+  // check if hero already exist 
+  const heroExist = superHeros.find((hero) => {
+    return (
+      hero.name.toLowerCase().replace(" ", "-") ===
+      req.body.name.toLowerCase().replace(" ", "-")
+    );
   });
+  if (!heroExist) {
+    superHeros.push(req.body);
+    return res.json({
+      message: "Ok, hero is added",
+      hero: superHeros[superHeros.length - 1],
+    });
+  }
+  res.send(`Hero with name "${req.body.name}" already exist`);
 });
 // PATCH A HERO'S POWERS
 app.patch("/heroes/:name/powers", findHero, (req, res) => {
