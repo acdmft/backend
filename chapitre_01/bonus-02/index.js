@@ -1,17 +1,11 @@
 const express = require("express");
 const app = express();
-const axios = require("axios");
+// POKEMONS
+const pokemons = require("./pokemons");
 
 app.use(express.json());
 
-// POKEMONS
-const pokemons = [];
-axios
-  .get("https://pokeapi.co/api/v2/pokemon?limit=26&offset=26")
-  .then((res) => {
-    pokemons.push(res.data.results);
-  });
-console.log(pokemons);
+
 
 //ROUTES
 // GET ALL POKEMONS
