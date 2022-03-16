@@ -26,8 +26,19 @@ const schema = Joi.object({
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required(),
   city: Joi.string().required(),
-  age: Joi.number().min(10).max(99).required(),
+  age: Joi.number().integer().min(1).max(99).strict().required(),
 });
+function validUser(req, res, next) {
+  const user = req.body;
+  const validationResult = schema.validate(user);
+  if (validationResult.error) {
+    return res.status(400).json({
+      message: validationResult.error,
+      description: validationResult.error.details[0].message,
+    });
+  }
+  next();
+}
 
 // ROUTES
 
@@ -36,14 +47,8 @@ router.get("/", (_req, res) => {
   res.json(users);
 }); 
 // POST USER
-router.post("/", (req, res) => {
+router.post("/", validUser, (req, res) => {
   const user = req.body;
-  const validationResult = schema.validate(user);
-  if (validationResult.error) {
-    return res.status(400).json({
-      message: validationResult.error,
-    });
-  }
   // create id for new user 
   const id = users[users.length - 1].id + 1;
   user.id = id;
