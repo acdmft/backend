@@ -38,14 +38,18 @@ app.get("/students", async (req, res) => {
 		);
   res.json(students.rows);
 });
-app.post("/students", (req, res) => {
-  students.push({
-    id: students.length + 1,
-    name: req.body.name,
-    age: req.body.age,
-    gender: req.body.gender,
-  })
-  res.send(students);
+app.post("/students", async (req, res) => {
+	try {
+		await Postgres.query(
+			"INSERT INTO students(name, age, gender) VALUES ($1, $2, $3)", 
+			[req.body.name, req.body.age, req.body.gender]
+		)
+	} catch(err) {
+		return res.status(400).json({
+			message: "Error! Bad data received!"
+		})
+	}
+  res.json({message: `Student ${req.body.name} added to the database`});
 });
 
 
