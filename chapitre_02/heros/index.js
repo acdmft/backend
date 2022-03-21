@@ -20,13 +20,18 @@ const transformName = (req, res, next) => {
   }
   next();
 };
-// findHero MIDDLEWARE
+// findHero MIDDLEWARE (finds hero by name)
 const findHero = async (req, _res, next) => {
+  let hero;
   try {
-    // const hero = await Postgres.query("SELECT * FROM heroes WHERE id")
-  } catch {
-
+    hero = await Postgres.query(
+      "SELECT * FROM heroes WHERE name = $1",
+      [req.params.name]
+      );
+  } catch(err) {
+    return res.json({message: err});
   }
+  req.hero = hero.rows;
   next();
 }
 
