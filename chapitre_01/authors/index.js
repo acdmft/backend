@@ -48,13 +48,11 @@ app.get("/authors/:authorId", async (req, res) => {
   res.json(author.rows);
 });
 // exercise 03
-app.get("/authors/:authorId/books", (req,res) => {
-  const author = authors[parseInt(req.params.authorId) - 1];
-
-  if (!author) {
-    return res.json("Author not found!");
-  } 
-  res.json(author.books.join(", "));
+app.get("/authors/:authorId/books", async (req,res) => {
+  const books = await Postgres.query(
+    'SELECT books FROM authors WHERE id=$1', [req.params.authorId]
+  );
+  res.json(books.rows[0].books.join(", "));
 });
 //exercise 04 
 app.get("/json/authors/:authorId", (req, res) => {
