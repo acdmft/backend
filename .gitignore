@@ -2,3 +2,4 @@ node_modules/
 chapitre_04/validation/node_modules/
 chapitre_03/node_modules/
 *.jpg
+*.env

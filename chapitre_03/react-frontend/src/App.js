@@ -1,11 +1,12 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import axios from "axios";
 
 function App() {
   const [name, setName] = useState("");
   const [file, setFile] = useState([]);
+  const [usersList, setUsersList] = useState([]);
 
   const addFile = (e) => {
     setFile(e.target.files[0]);
@@ -27,7 +28,12 @@ function App() {
     });
   };
 
+  useEffect(()=>{
+    axios.get("localhost:8000/users")
+      .then((res) => setUsersList(res))
+  }, []);
   return (
+    <>
     <div className="formWrapper">
 
       <form onSubmit={onSubmit}>
@@ -49,6 +55,13 @@ function App() {
         <button>Send</button>
       </form>
     </div>
+    {if (usersList === 0) {
+      return (<p>Loading</p>)
+    } else {
+
+    }
+  }
+    </>
   );
 }
 export default App;

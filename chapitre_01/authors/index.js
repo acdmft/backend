@@ -1,5 +1,14 @@
 const express = require("express");
 const app = express();
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "./config.env"
+})
+const { Pool } = require("pg");
+const Postgres = new Pool({ssl: {rejectUnauthorized: false }})
+
+app.use(express.json());
+
 
 const authors = [
   {
@@ -24,17 +33,19 @@ const authors = [
   },
 ]
 // exercise 01
-app.get("/", (req, res) => {
-  res.send("Authors API");
+app.get("/authors", async (req, res) => {
+  const authors = await Postgres.query(
+    "SELECT * FROM authors"
+  );
+  res.json(authors.rows);
 });
 // exercise 02 
-app.get("/authors/:authorId", (req, res) => {
-  const author = authors[parseInt(req.params.authorId) -1];
-  if (!author) {
-    return res.json( "Author not found!");
-  }
-  res.json(`${author.name}, ${author.nationality}`);
-  
+app.get("/authors/:authorId", async (req, res) => {
+  const author = await Postgres.query(
+    'SELECT name FROM authors WHERE id=$1', [req.params.authorId]
+  );
+  console.log(author.rows)
+  res.json(author.rows);
 });
 // exercise 03
 app.get("/authors/:authorId/books", (req,res) => {
@@ -51,8 +62,8 @@ app.get("/json/authors/:authorId", (req, res) => {
   if (!author) {
     return res.json( "Author not found!");
   }
-  delete()
-  // res.json({name: author.name, nationality: author.nationality});
+  
+  res.json({name: author.name, nationality: author.nationality});
 });
 
 app.get("/json/authors/:authorId/books", (req,res) => {
@@ -64,6 +75,10 @@ app.get("/json/authors/:authorId/books", (req,res) => {
   res.json({books: author.books});
 });
 
-  app.listen(8080, () => {
+app.get('*', (_req, res) => { 
+  res.status(404).json("404 error");
+})
+
+app.listen(8080, () => {
   console.log("Listen on port 8080");
 });
