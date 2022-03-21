@@ -1,5 +1,13 @@
 const express = require("express");
 const app = express();
+const dotenv = require("dotenv");
+dotenv.config({
+  path: "../config.env"
+})
+const { Pool } = require("pg");
+const res = require("express/lib/response");
+const Postgres = new Pool({ssl: {rejectUnauthorized: false}});
+
 // DEBUG MIDDLEWARE
 const debug = (req, res, next) => {
   console.log("Call from debug middleware");
@@ -13,14 +21,12 @@ const transformName = (req, res, next) => {
   next();
 };
 // findHero MIDDLEWARE
-function findHero(req, _res, next) {
-  const hero = superHeros.find((hero) => {
-    return (
-      hero.name.toLowerCase().replace(" ", "-") ===
-      req.params.name.toLowerCase().replace(" ", "-")
-    );
-  });
-  req.hero = hero;
+const findHero = async (req, _res, next) => {
+  try {
+    // const hero = await Postgres.query("SELECT * FROM heroes WHERE id")
+  } catch {
+
+  }
   next();
 }
 
@@ -58,8 +64,17 @@ const superHeros = [
   },
 ];
 // GET all heroes
-app.get("/heroes", (_req, res) => {
-  res.json(superHeros);
+app.get("/heroes", async (_req, res) => {
+  let heroes;
+  try {
+    heroes = await Postgres.query(
+      "SELECT * FROM heroes"
+    );
+  } catch (err) {
+    return res.status(400).json({message: err })
+  }
+  res.json(heroes.rows);
+
 });
 // GET hero by his name
 app.get("/heroes/:name", findHero, (req, res) => {

@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config({
-  path: "./config.env"
+  path: "../config.env"
 });
 const { Pool } = require("pg");
 const Postgres = new Pool({ssl: {rejectUnauthorized: false}});
