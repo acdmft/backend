@@ -87,25 +87,19 @@ app.get("/heroes/:name", findHero, (req, res) => {
 });
 // GET the powers of hero
 app.get("/heroes/:name/powers", findHero, (req, res) => {
-  res.json(req.hero.power);
+  res.json(req.hero[0].power.join(', '));
 });
 // POST A HERO
-app.post("/heroes", transformName, (req, res) => {
-  // check if hero already exist 
-  const heroExist = superHeros.find((hero) => {
-    return (
-      hero.name.toLowerCase().replace(" ", "-") ===
-      req.body.name.toLowerCase().replace(" ", "-")
-    );
-  });
-  if (!heroExist) {
-    superHeros.push(req.body);
-    return res.json({
-      message: "Ok, hero is added",
-      hero: superHeros[superHeros.length - 1],
-    });
+app.post("/heroes", transformName, async (req, res) => {
+  try {
+    await Postgres.query(
+      "INSERT INTO heroes(name, power, color, isAlive, age, image) VALUES ($1, $2, $3, $4, $5, $6)",
+      [req.body.name, req.body.power, req.body.color, req.body.isAlive, req.body.age, req.body.image]
+    )
+  } catch(err) {
+    return res.json({message: err})
   }
-  res.send(`Hero with name "${req.body.name}" already exist`);
+  res.json({message: `user ${req.body.name} created`})
 });
 // PATCH A HERO'S POWERS
 app.patch("/heroes/:name/powers", findHero, (req, res) => {
