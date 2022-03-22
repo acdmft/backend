@@ -25,8 +25,8 @@ const findHero = async (req, _res, next) => {
   let hero;
   try {
     hero = await Postgres.query(
-      "SELECT * FROM heroes WHERE name = $1",
-      [req.params.name]
+      "SELECT * FROM heroes WHERE LOWER(name) = $1",
+      [req.params.name.toLowerCase()]
       );
   } catch(err) {
     return res.json({message: err});
@@ -102,10 +102,18 @@ app.post("/heroes", transformName, async (req, res) => {
   res.json({message: `user ${req.body.name} created`})
 });
 // PATCH A HERO'S POWERS
-app.patch("/heroes/:name/powers", findHero, (req, res) => {
-  const hero = req.hero; 
-  hero.power.push(req.body.power);
-  res.json({message: "Power added", hero: req.hero});
+app.patch("/heroes/:name/powers", findHero, async (req, res) => {
+  const hero = req.hero[0]; 
+  console.log(typeof req.body.power, hero);
+  try {
+    await Postgres.query(
+      "UPDATE heroes SET power = $1 WHERE id = $2",
+      [req.body.power, hero.id]
+    )
+  } catch(err) {
+    return res.json({message: err});
+  }
+  res.json({message: "Power added", hero: req.hero.name});
 });
 // 404 PAGE
 app.get("*", (_req, res) => {
