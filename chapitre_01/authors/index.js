@@ -74,16 +74,33 @@ app.post("/authors", async (req, res) => {
 //   res.json(author.rows);
 // });
 app.get("/authors/:id", async (req, res) => {
-  const author = await Author.findById(req.params.id);
+  let author;
+  try {
+    author = await Author.findById(req.params.id).select("-__v -_id");
+  } catch(err) {
+    return res.json({message: err});
+  }
   res.json(author);
 });
 // exercise 03
-app.get("/authors/:authorId/books", async (req,res) => {
-  const books = await Postgres.query(
-    'SELECT books FROM authors WHERE id=$1', [req.params.authorId]
-  );
-  res.json(books.rows[0].books.join(", "));
+
+// GET AUTHORS BOOKS
+// app.get("/authors/:authorId/books", async (req,res) => {
+//   const books = await Postgres.query(
+//     'SELECT books FROM authors WHERE id=$1', [req.params.authorId]
+//   );
+//   res.json(books.rows[0].books.join(", "));
+// });
+app.get("/authors/:authorId/books", async (req, res) => {
+  let result;
+  try {
+    result = await Author.findById(req.params.authorId).select("books");
+  } catch(err) {
+    return res.json({message: err});
+  }
+  res.json(result.books);
 });
+
 //exercise 04 
 app.get("/json/authors/:authorId", (req, res) => {
   const author = authors[parseInt(req.params.authorId) -1];
