@@ -101,13 +101,23 @@ app.get("/authors/:authorId/books", async (req, res) => {
   res.json(result.books);
 });
 
+// DELETE AUTHOR BY ID
+app.delete("/authors/:id", async (req, res) => {
+  try {
+    await Author.deleteOne({id: req.params.id});
+  } catch(err) {
+    return res.json({message: err});
+  }
+  res.json({message: `Author with id: ${req.params.id} removed`})
+});
+
 //exercise 04 
+
 app.get("/json/authors/:authorId", (req, res) => {
   const author = authors[parseInt(req.params.authorId) -1];
   if (!author) {
     return res.json( "Author not found!");
   }
-  
   res.json({name: author.name, nationality: author.nationality});
 });
 
