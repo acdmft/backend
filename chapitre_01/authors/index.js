@@ -62,13 +62,20 @@ app.post("/authors", async (req, res) => {
     message: "Author created",
   })
 });
+
 // exercise 02 
-app.get("/authors/:authorId", async (req, res) => {
-  const author = await Postgres.query(
-    'SELECT name FROM authors WHERE id=$1', [req.params.authorId]
-  );
-  console.log(author.rows)
-  res.json(author.rows);
+
+// GET AUTHOR BY ID
+// app.get("/authors/:authorId", async (req, res) => {
+//   const author = await Postgres.query(
+//     'SELECT name FROM authors WHERE id=$1', [req.params.authorId]
+//   );
+//   console.log(author.rows)
+//   res.json(author.rows);
+// });
+app.get("/authors/:id", async (req, res) => {
+  const author = await Author.findById(req.params.id);
+  res.json(author);
 });
 // exercise 03
 app.get("/authors/:authorId/books", async (req,res) => {
