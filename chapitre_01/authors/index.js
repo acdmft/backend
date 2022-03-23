@@ -1,14 +1,25 @@
 const express = require("express");
 const app = express();
-const dotenv = require("dotenv");
-dotenv.config({
-  path: "./config.env"
-});
-const { Pool } = require("pg");
-const Postgres = new Pool({ssl: {rejectUnauthorized: false }})
+// const dotenv = require("dotenv");
+// dotenv.config({
+//   path: "./config.env"
+// });
+// const { Pool } = require("pg");
+// const Postgres = new Pool({ssl: {rejectUnauthorized: false }})
+const Author = require("./models/authorModel");
+const mongoose = require("mongoose");
+const { user } = require("pg/lib/defaults");
 
 app.use(express.json());
 
+//connect to mongoDB
+mongoose.connect(
+  "mongodb+srv://andrei:DSzKj3wdfukTAOqi@cluster0.wny66.mongodb.net/konexio-mongo?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+  }
+)
+.then(() => console.log("Connected to MongoDB"));
 
 const authors = [
   {
@@ -33,11 +44,23 @@ const authors = [
   },
 ]
 // exercise 01
+// app.get("/authors", async (req, res) => {
+//   const authors = await Postgres.query(
+//     "SELECT * FROM authors"
+//   );
+//   res.json(authors.rows);
+// });
+// GET ALL AUTHORS 
 app.get("/authors", async (req, res) => {
-  const authors = await Postgres.query(
-    "SELECT * FROM authors"
-  );
-  res.json(authors.rows);
+  const authors = await Author.find();
+  res.json(authors);
+});
+// POST AUTHOR 
+app.post("/authors", async (req, res) => {
+  await Author.create(req.body);
+  res.status(201).json({
+    message: "Author created",
+  })
 });
 // exercise 02 
 app.get("/authors/:authorId", async (req, res) => {
