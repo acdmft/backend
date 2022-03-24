@@ -78,13 +78,14 @@ app.get("/authors/:id", async (req, res) => {
   try {
     author = await Author.findById(req.params.id).select("-__v -_id");
   } catch(err) {
-    return res.json({message: err});
+    return res.status(400).json({message: err});
   }
   res.json(author);
 });
 // exercise 03
 
 // GET AUTHORS BOOKS
+
 // app.get("/authors/:authorId/books", async (req,res) => {
 //   const books = await Postgres.query(
 //     'SELECT books FROM authors WHERE id=$1', [req.params.authorId]
@@ -96,7 +97,7 @@ app.get("/authors/:authorId/books", async (req, res) => {
   try {
     result = await Author.findById(req.params.authorId).select("books");
   } catch(err) {
-    return res.json({message: err});
+    return res.status(400).json({message: err});
   }
   res.json(result.books);
 });
@@ -104,21 +105,41 @@ app.get("/authors/:authorId/books", async (req, res) => {
 // DELETE AUTHOR BY ID
 app.delete("/authors/:id", async (req, res) => {
   try {
-    await Author.deleteOne({id: req.params.id});
+    await Author.deleteOne({_id: req.params.id});
   } catch(err) {
-    return res.json({message: err});
+    return res.status(400).json({message: err});
   }
   res.json({message: `Author with id: ${req.params.id} removed`})
+});
+// UPDATE AUTHORS BOOKS 
+app.patch("/authors/:id/books", async (req, res) => {
+  console.log(req.body.name);
+  try {
+    await Author.findOneAndUpdate({_id: req.params.id }, { $push: { books: req.body.books } });
+  } catch (err) {
+    return res.status(400).json({message: `Error occurred. ${err}`});
+  }
+  res.json({message: "Books where updated"});
 });
 
 //exercise 04 
 
-app.get("/json/authors/:authorId", (req, res) => {
-  const author = authors[parseInt(req.params.authorId) -1];
-  if (!author) {
-    return res.json( "Author not found!");
+// app.get("/json/authors/:authorId", (req, res) => {
+//   const author = authors[parseInt(req.params.authorId) -1];
+//   if (!author) {
+//     return res.json( "Author not found!");
+//   }
+//   res.json({name: author.name, nationality: author.nationality});
+// });
+app.get("/json/authors/:id", async (req, res) => {
+  try { 
+    const author = await Author.findById(req.params.id)
+    return res.json(author);
+  } catch (err) {
+    return res.status(400).json({
+      message: err
+    });
   }
-  res.json({name: author.name, nationality: author.nationality});
 });
 
 app.get("/json/authors/:authorId/books", (req,res) => {
